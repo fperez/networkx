@@ -1,23 +1,22 @@
 import networkx as nx
-#from networkx.generators.smax import li_smax_graph
 
-def s_metric(G, normalized=True):
-    """Return the s-metric of graph.
+__all__ = ["s_metric"]
 
-    The s-metric is defined as the sum of the products deg(u)*deg(v)
-    for every edge (u,v) in G. If norm is provided construct the
-    s-max graph and compute it's s_metric, and return the normalized
-    s value
+
+@nx._dispatchable
+def s_metric(G):
+    """Returns the s-metric [1]_ of graph.
+
+    The s-metric is defined as the sum of the products ``deg(u) * deg(v)``
+    for every edge ``(u, v)`` in `G`.
 
     Parameters
     ----------
-    G    : graph
-           The graph used to compute the s-metric.
-    normalized : bool (optional)
-           Normalize the value.
+    G : graph
+        The graph used to compute the s-metric.
 
     Returns
-    -------       
+    -------
     s : float
         The s-metric of the graph.
 
@@ -26,12 +25,6 @@ def s_metric(G, normalized=True):
     .. [1] Lun Li, David Alderson, John C. Doyle, and Walter Willinger,
            Towards a Theory of Scale-Free Graphs:
            Definition, Properties, and  Implications (Extended Version), 2005.
-           http://arxiv.org/abs/cond-mat/0501169
+           https://arxiv.org/abs/cond-mat/0501169
     """
-    if normalized:
-        raise nx.NetworkXError("Normalization not implemented")
-#        Gmax = li_smax_graph(list(G.degree().values()))
-#        return s_metric(G,normalized=False)/s_metric(Gmax,normalized=False)
-#    else:    
-    return float(sum([G.degree(u)*G.degree(v) for (u,v) in G.edges_iter()]))
-
+    return float(sum(G.degree(u) * G.degree(v) for (u, v) in G.edges()))

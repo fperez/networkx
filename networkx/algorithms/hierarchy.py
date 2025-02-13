@@ -1,17 +1,13 @@
-# -*- coding: utf-8 -*-
 """
 Flow Hierarchy.
 """
-#    Copyright (C) 2004-2011 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-import networkx as nx
-__authors__ = "\n".join(['Ben Edwards (bedwards@cs.unm.edu)'])
-__all__ = ['flow_hierarchy']
 
+import networkx as nx
+
+__all__ = ["flow_hierarchy"]
+
+
+@nx._dispatchable(edge_attrs="weight")
 def flow_hierarchy(G, weight=None):
     """Returns the flow hierarchy of a directed network.
 
@@ -23,13 +19,18 @@ def flow_hierarchy(G, weight=None):
     G : DiGraph or MultiDiGraph
        A directed graph
 
-    weight : key,optional (default=None)
-       Attribute to use for node weights. If None the weight defaults to 1.
+    weight : string, optional (default=None)
+       Attribute to use for edge weights. If None the weight defaults to 1.
 
     Returns
     -------
     h : float
-       Flow heirarchy value
+       Flow hierarchy value
+
+    Raises
+    ------
+    NetworkXError
+       If `G` is not a directed graph or if `G` has no edges.
 
     Notes
     -----
@@ -37,7 +38,7 @@ def flow_hierarchy(G, weight=None):
     exponentiation of the adjacency matrix.  This function implements an
     alternative approach that finds strongly connected components.
     An edge is in a cycle if and only if it is in a strongly connected
-    component, which can be found in `O(m)` time using Tarjan's algorithm.
+    component, which can be found in $O(m)$ time using Tarjan's algorithm.
 
     References
     ----------
@@ -47,7 +48,10 @@ def flow_hierarchy(G, weight=None):
        DOI: 10.1002/cplx.20368
        http://web.mit.edu/~cmagee/www/documents/28-DetectingEvolvingPatterns_FlowHierarchy.pdf
     """
+    # corner case: G has no edges
+    if nx.is_empty(G):
+        raise nx.NetworkXError("flow_hierarchy not applicable to empty graphs")
     if not G.is_directed():
-        raise nx.NetworkXError("G must be a digraph in flow_heirarchy")
+        raise nx.NetworkXError("G must be a digraph in flow_hierarchy")
     scc = nx.strongly_connected_components(G)
-    return 1.-sum(G.subgraph(c).size(weight) for c in scc)/float(G.size(weight))
+    return 1 - sum(G.subgraph(c).size(weight) for c in scc) / G.size(weight)
